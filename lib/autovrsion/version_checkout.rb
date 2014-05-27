@@ -22,7 +22,7 @@ class Checkout
 			walker.push(ref.target)
 			walker.each { |w|
 			#puts w.oid
-			 versh[version_count-1] = w.oid 
+			 versh[version_count] = w.oid 
 			  version_count-=1 
 			 }	
 			walker.reset

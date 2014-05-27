@@ -6,7 +6,7 @@ require 'git'
 
 case ARGV[0]
 	when "options"
-		puts "\tdisplay"
+		puts "\tdisplay - "
 		puts "\tstart"
 		puts "\tstop"
 		puts "\tcheck"

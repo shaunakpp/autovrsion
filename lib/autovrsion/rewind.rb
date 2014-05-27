@@ -25,7 +25,7 @@ def rewindto path
     @repo.index.write
     v = version_count - version_no
     @repo.reset("HEAD~#{v}", :hard)
-    puts "Rewind Successful to version number".green + "#{version_no}".yellow
+    puts "Rewind Successful to version number".green + " #{version_no}".yellow
 	#rescue Rugged::InvalidError
 #		puts "Enter Valid Version no"
 #	end	
