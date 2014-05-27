@@ -7,7 +7,7 @@ class FileListen
 	def lis(path)		
 		repo=Rugged::Repository.new(path)
 		#callback = Proc.new do |modified,added,removed|		
-				listener = Listen.to(path) do |modified,added,removed|
+				listener = Listen.to(path) do |modified,added,removed|	
 			index = repo.index
 			 user =  {
 			 			name: repo.config['user.name'],
@@ -28,7 +28,7 @@ class FileListen
 				m = modified
 				index.add_all
 				index.write
-				commit_options[:message] ||= "#{m} modified "
+				commit_options[:message] ||= "#{m} modified at "+"#{Time.now}"
 				Rugged::Commit.create(repo,commit_options)
 				puts "File Modified".yellow
 			end
@@ -39,14 +39,14 @@ class FileListen
 				#a.sub(']',' ')
 				index.add_all
 				index.write
-				commit_options[:message] ||= " #{a} added "
+				commit_options[:message] ||= " #{a} added at "+"#{Time.now}"
 				Rugged::Commit.create(repo,commit_options)
 				puts "File Added".green
 			end
 
 			if removed.empty? == false then
 				r = removed
-				commit_options[:message] ||= "#{r} removed "
+				commit_options[:message] ||= "#{r} removed at "+"#{Time.now}"
 				Rugged::Commit.create(repo, commit_options)
 				puts "File Removed".red
 			end
@@ -54,11 +54,16 @@ class FileListen
 			
 		end
 		listener.start
-		#sleep
+		
 		stop  = STDIN.gets
-			if stop.to_i == 1
+			if stop == 'stop'
+				puts "Listener stopped"
 				listener.stop
-				abort"Listener stopped"
+				
+			end	
+			if stop.to_i == 1
+					abort"Listener stopped"
+					listener.stop		
 			end	
 		#listener.stop
 	end

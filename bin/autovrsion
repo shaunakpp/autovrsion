@@ -4,6 +4,11 @@ require 'listen'
 require 'rugged'
 require 'git'
 
+if ARGV[1] == nil
+	path = Dir.pwd
+else
+	path = ARGV[1]
+end		
 case ARGV[0]
 	when "options"
 		puts "\tdisplay - "
@@ -13,29 +18,39 @@ case ARGV[0]
 		puts "\tcreate" 
 		puts "\treset"
 		puts "\trewind"
+	when "help"
+	f = File.open("README.md")
+	while line = f.gets do
+    	puts line
+	end
+
+f.close	
 	when "display"
 		require 'autovrsion/display_versions.rb'
 		d= DisplayLog.new
-		d.disp(ARGV[1])
+		d.disp(path)
 	when "start"
 		require 'autovrsion/filelistener.rb'
+		puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
 		f = FileListen.new
-		f.lis(ARGV[1])
+		f.lis(path)
+		
 	when "check"
 		require 'autovrsion/version_checkout.rb'
 		v = Checkout.new
-		v.chk(ARGV[1])
+		v.chk(path)
 	when "create"
 		require 'autovrsion/create_repository.rb'
 		c  = CreateRepo.new
-		c.create(ARGV[1])
+		c.create(path)
 	when "reset"
 		require 'autovrsion/reset.rb'
 		r = Reset.new
-		r.reset(ARGV[1])
+		r.reset(path)
 	when "rewind"
 		require 'autovrsion/rewind.rb'
 		rw = Rewind.new
-		rw.rewindto(ARGV[1])
+		rw.rewindto(path)
 	end	
+
 
