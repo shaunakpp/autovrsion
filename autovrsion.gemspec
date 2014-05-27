@@ -8,13 +8,15 @@ Gem::Specification.new do |spec|
   spec.version       = Autovrsion::VERSION
   spec.authors       = ["Shaunak Pagnis"]
   spec.email         = ["shaunak.pagnis@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.summary       = %q{Command line tool for automatic versioning of files in a repository}
+  spec.description   = %q{A command line that uses Rugged and Listen for automatic versioning of files.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0")
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.files         = `git ls-files`.split($/)
+  spec.bindir        = 'bin'
+  spec.executables   = 'autovrsion'
+  #spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
