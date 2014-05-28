@@ -17,13 +17,16 @@ v = Checkout.new
 c  = CreateRepo.new
 r = Reset.new
 rw = Rewind.new
-
+d= DisplayLog.new
 
 if ARGV[1] == nil
-	path = Dir.pwd
+	path = Dir.pwd.to_s
+	puts path
 else
-	path = ARGV[1]
+	path = ARGV[1].to_s
+	puts path
 end		
+
 case ARGV[0]
 	when "options"
 		puts "\tdisplay - "
@@ -41,18 +44,18 @@ case ARGV[0]
 	h.close	
 	when "display"
 		
-		d= DisplayLog.new
+		
 		d.disp(path)
 	when "start"
 		
 		puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
 		
-		f.lis(path,option)
+		f.lis(path,"start")
 	when "stop"
-		require 'autovrsion/filelistener.rb'
+		#require 'autovrsion/filelistener.rb'
 		#puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
 		
-		f.lis(path,option)
+		f.lis(path,"stop")
 				
 	when "check"
 		
