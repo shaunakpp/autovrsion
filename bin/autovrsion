@@ -4,6 +4,21 @@ require 'listen'
 require 'rugged'
 require 'git'
 
+require 'autovrsion/display_versions.rb'
+require 'autovrsion/filelistener.rb'
+require 'autovrsion/version_checkout.rb'
+require 'autovrsion/create_repository.rb'
+require 'autovrsion/reset.rb'
+require 'autovrsion/rewind.rb'
+
+
+f = FileListen.new
+v = Checkout.new
+c  = CreateRepo.new
+r = Reset.new
+rw = Rewind.new
+
+
 if ARGV[1] == nil
 	path = Dir.pwd
 else
@@ -19,37 +34,41 @@ case ARGV[0]
 		puts "\treset"
 		puts "\trewind"
 	when "help"
-	f = File.open("README.md")
+	h = File.open("autovrsion/help.txt")	
 	while line = f.gets do
     	puts line
 	end
-
-f.close	
+	h.close	
 	when "display"
-		require 'autovrsion/display_versions.rb'
+		
 		d= DisplayLog.new
 		d.disp(path)
 	when "start"
-		require 'autovrsion/filelistener.rb'
-		puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
-		f = FileListen.new
-		f.lis(path)
 		
+		puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
+		
+		f.lis(path,option)
+	when "stop"
+		require 'autovrsion/filelistener.rb'
+		#puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
+		
+		f.lis(path,option)
+				
 	when "check"
-		require 'autovrsion/version_checkout.rb'
-		v = Checkout.new
+		
+		
 		v.chk(path)
 	when "create"
-		require 'autovrsion/create_repository.rb'
-		c  = CreateRepo.new
+		
+		
 		c.create(path)
 	when "reset"
-		require 'autovrsion/reset.rb'
-		r = Reset.new
+		
+		
 		r.reset(path)
 	when "rewind"
-		require 'autovrsion/rewind.rb'
-		rw = Rewind.new
+		
+		
 		rw.rewindto(path)
 	end	
 

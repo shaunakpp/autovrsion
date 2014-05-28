@@ -2,9 +2,12 @@
 require 'rugged'
 require 'listen'
 require 'colored'
+require 'daemons'
 
 class FileListen
-	def lis(path)		
+	def lis(path,option)		
+		daemon = Daemons.call() do
+
 		repo=Rugged::Repository.new(path)
 		#callback = Proc.new do |modified,added,removed|		
 				listener = Listen.to(path) do |modified,added,removed|	
@@ -53,18 +56,32 @@ class FileListen
 
 			
 		end
+		if option == "start"
+		puts "Listener active"	
 		listener.start
+		end
 		
-		stop  = STDIN.gets
-			if stop == 'stop'
-				puts "Listener stopped"
-				listener.stop
+		if option == "stop"
+		puts "Listener Stopped"	
+		daemon.stop
+		listener.stop
+		end	
+
+
+
+		end
+		#listener.start
+		
+		#stop  = STDIN.gets
+		#	if stop == 'stop'
+		#		puts "Listener stopped"
+		#		listener.stop
 				
-			end	
-			if stop.to_i == 1
-					abort"Listener stopped"
-					listener.stop		
-			end	
+		#	end	
+		#	if stop.to_i == 1
+		#			abort"Listener stopped"
+		#			listener.stop		
+		#	end	
 		#listener.stop
 	end
 end
