@@ -11,68 +11,62 @@ require 'autovrsion/create_repository.rb'
 require 'autovrsion/reset.rb'
 require 'autovrsion/rewind.rb'
 
-
-f = FileListen.new
-v = Checkout.new
-c  = CreateRepo.new
-r = Reset.new
-rw = Rewind.new
-d= DisplayLog.new
-
 if ARGV[1] == nil
 	path = Dir.pwd.to_s
-	puts path
 else
 	path = ARGV[1].to_s
-	puts path
 end		
 
 case ARGV[0]
 	when "options"
-		puts "\tdisplay - "
-		puts "\tstart"
-		puts "\tstop"
-		puts "\tcheck"
-		puts "\tcreate" 
-		puts "\treset"
-		puts "\trewind"
-	when "help"
-	h = File.open("autovrsion/help.txt")	
-	while line = f.gets do
-    	puts line
-	end
-	h.close	
+puts"create:\n$ autovrsion create 
+$ autovrsion create </path/to/repository>
+initialize your repository at current directory or specified directory
+start:
+$ autovrsion start 
+$ autovrsion start </path/to/repository>
+This will start the listener which will auto-commit after every change detected in the directory
+display:
+$ autovrsion display
+$ autovrsion display </path/to/repository>
+Shows a list of all versions in the directory.
+check:
+$ autovrsion check
+$ autovrsion check </path/to/repository> 
+Enter the version number to access a particular version(always use reset after this command).
+reset:
+$ autovrsion reset
+$ autovrsion reset </path/to/repository>
+Reset to latest version.
+rewind:
+$ autovrsion rewind
+$ autovrsion rewind </path/to/repository>
+Permanently rewind to a particular version. All versions above the specified versions are removed permanently !"
+		
 	when "display"
-		
-		
+		d= DisplayLog.new
 		d.disp(path)
+
 	when "start"
-		
-		puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
-		
+		f = FileListen.new
 		f.lis(path,"start")
-	when "stop"
-		#require 'autovrsion/filelistener.rb'
-		#puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
-		
-		f.lis(path,"stop")
-				
-	when "check"
-		
-		
+					
+	when "check"	
+		v = Checkout.new
 		v.chk(path)
+
 	when "create"
-		
-		
+		c  = CreateRepo.new
 		c.create(path)
-	when "reset"
-		
-		
+	
+	when "reset"	
+		r = Reset.new
 		r.reset(path)
-	when "rewind"
-		
-		
+
+	when "rewind"		
+		rw = Rewind.new
 		rw.rewindto(path)
+
 	end	
 
 

@@ -2,15 +2,14 @@
 require 'rugged'
 require 'listen'
 require 'colored'
-require 'daemons'
 
 class FileListen
-	def lis(path,option)		
-		#daemon = Daemons.call() do
+	def lis(path,option)			
+			begin
 
-		repo=Rugged::Repository.new(path)
-		#callback = Proc.new do |modified,added,removed|		
-			listener = Listen.to(path) do |modified,added,removed|	
+			listener = Listen.to(path,only: [/^^[\/[a-zA-Z]*]*["Untitled Document"]/,/^[\/[a-zA-Z]*]*[".git"]/]) do |modified,added,removed|	
+	  			repo=Rugged::Repository.new(path)
+				puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
 	  			index = repo.index
 				user =  {
 				 			name: repo.config['user.name'],
@@ -18,75 +17,90 @@ class FileListen
 	             			time: Time.now
 	         			}
 
-				commit_options = {}
-					commit_options[:tree] = index.write_tree(repo)
+					commit_options = {}	
 					commit_options[:author] = user
 					commit_options[:committer] = user
 					commit_options[:parents] = repo.empty? ? [] : [ repo.head.target ].compact
 					commit_options[:update_ref] = 'HEAD'
 
-				if modified.empty? == false then
+				if modified.empty? == false
+					index.reload
+					modified.each do |x|
+						x.gsub!(/[a-zA-Z]*[\/]/,"")
+						puts x
+						index.add("#{x}")	
+						end
 
-
+					commit_options[:tree] = index.write_tree(repo)
 					m = modified
-					index.add_all
 					index.write
+					m.each do |x|
+						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
+						x.gsub!(/\]/,"")
+						puts x.gsub
+					end	
 					commit_options[:message] ||= "#{m} modified at "+"#{Time.now}"
 					Rugged::Commit.create(repo,commit_options)
 					puts "File Modified".yellow
+					
 				end
 
-				if added.empty? == false then
+				if added.empty? == false
+					index.reload
+					added.each do |x|
+						x.gsub!(/[a-zA-Z]*[\/]/,"")
+						index.add("#{x}")
+						if x == "Untitled Document"
+							index.remove("Untitled Document")
+						end
+					end
+
 					a = added
-					#a.sub('[',' ')
-					#a.sub(']',' ')
-					index.add_all
+					commit_options[:tree] = index.write_tree repo
+					a.each do |x|
+						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
+						x.gsub!(/\]/,"")
+						puts x
+					end	
+					
 					index.write
 					commit_options[:message] ||= " #{a} added at "+"#{Time.now}"
 					Rugged::Commit.create(repo,commit_options)
 					puts "File Added".green
+					
 				end
 
-				if removed.empty? == false then
+				if removed.empty? == false
+					
+					index.reload
 					r = removed
+					index.add_all
+					commit_options[:tree] = index.write_tree(repo)
+					r.each do |x|
+						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
+						x.gsub!(/\]/,"")
+					end	
+					index.write
 					commit_options[:message] ||= "#{r} removed at "+"#{Time.now}"
-					Rugged::Commit.create(repo, commit_options)
+					Rugged::Commit.create(repo,commit_options)
 					puts "File Removed".red
 				end
 			end
-		puts "option is : #{option}"
-		#end
-		
-		if option == "start"
-			puts "Listener active"	
+
 			listener.start
-			sleep 10
-		end
-		
-		if option == "stop"
-			if listener.listen?
-				puts "Listener inactive"
-			else	
-				puts "Listener Stopped"	
-				daemon.stop
-				listener.stop
-			end
-		end	
+			stop  = STDIN.gets
+			if stop == "stop"
+				puts "Listener stopped"
+				listener.stop	
+			end	
 
-
-
-		end
-		#listener.start
-		
-		#stop  = STDIN.gets
-		#	if stop == 'stop'
-		#		puts "Listener stopped"
-		#		listener.stop
-				
-		#	end	
-		#	if stop.to_i == 1
-		#			abort"Listener stopped"
-		#			listener.stop		
-		#	end	
-		#listener.stop
+			if stop.to_i == 1
+					listener.stop
+					abort"Listener stopped"		
+			end	
+	rescue Errno::ENOENT
+		puts "Error !Path does not exist".red
+	end	
 	end
+
+end
