@@ -6,10 +6,10 @@ require 'colored'
 class FileListen
 	def lis(path,option)			
 			begin
-
+			puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
+			repo=Rugged::Repository.new(path)
 			listener = Listen.to(path,only: [/^^[\/[a-zA-Z]*]*["Untitled Document"]/,/^[\/[a-zA-Z]*]*[".git"]/]) do |modified,added,removed|	
-	  			repo=Rugged::Repository.new(path)
-				puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
+	  			
 	  			index = repo.index
 				user =  {
 				 			name: repo.config['user.name'],
@@ -40,9 +40,9 @@ class FileListen
 						puts x.gsub
 					end	
 					commit_options[:message] ||= "#{m} modified at "+"#{Time.now}"
+					
 					Rugged::Commit.create(repo,commit_options)
 					puts "File Modified".yellow
-					
 				end
 
 				if added.empty? == false
@@ -65,9 +65,10 @@ class FileListen
 					
 					index.write
 					commit_options[:message] ||= " #{a} added at "+"#{Time.now}"
+					if a[0] != "Untitled Document"
 					Rugged::Commit.create(repo,commit_options)
 					puts "File Added".green
-					
+					end
 				end
 
 				if removed.empty? == false
@@ -82,8 +83,10 @@ class FileListen
 					end	
 					index.write
 					commit_options[:message] ||= "#{r} removed at "+"#{Time.now}"
-					Rugged::Commit.create(repo,commit_options)
-					puts "File Removed".red
+					if r[0] != "Untitled Document"
+						Rugged::Commit.create(repo,commit_options)
+						puts "File Removed".red
+					end
 				end
 			end
 
