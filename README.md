@@ -44,29 +44,24 @@ https://www.ruby-lang.org/en/installation/
 $ autovrsion create
 or
 $ autovrsion create /path/to/repository
-initialize your repository at current directory or specified directory
 
 $ autovrsion start 
 or
 $ autovrsion start /path/to/repository
-This will start the listener which will auto-commit after every change detected in the directory
 
 $ autovrsion display
 or
 $ autovrsion display /path/to/repository
-Shows a list of all versions in the directory.
 
 $ autovrsion check
 or
 $ autovrsion check /path/to/repository 
-Enter the version number to access a particular version(always use reset after this command).
 
 $ autovrsion reset
 or
 $ autovrsion reset /path/to/repository
-Reset to latest version.
 
 $ autovrsion rewind
 or
 $ autovrsion rewind /path/to/repository
-Permanently rewind to a particular version. All versions above the specified versions are removed permanently !
+
