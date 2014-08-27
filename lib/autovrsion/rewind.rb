@@ -17,18 +17,18 @@ def rewindto path
     ch.chomp
     puts ch
     if ch.to_i == 1
-	puts "Enter Version number"
-	version_no = STDIN.gets.to_i
+    	puts "Enter Version number"
+    	version_no = STDIN.gets.to_i
 
-    #begin
-    @repo.index.add_all
-    @repo.index.write
-    v = version_count - version_no
-    @repo.reset("HEAD~#{v}", :hard)
-    puts "Rewind Successful to version number".green + " #{version_no}".yellow
-	#rescue Rugged::InvalidError
-#		puts "Enter Valid Version no"
-#	end	
+        #begin
+        @repo.index.add_all
+        @repo.index.write
+        v = version_count - version_no
+        @repo.reset("HEAD~#{v}", :hard)
+        puts "Rewind Successful to version number".green + " #{version_no}".yellow
+    	#rescue Rugged::InvalidError
+    #		puts "Enter Valid Version no"
+    #	end	
 	else
 	puts "exiting..."	
 	abort	
