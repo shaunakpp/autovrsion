@@ -1,12 +1,8 @@
-require 'git'
-require 'colored'
-
 class Reset
-def reset(path)
-
-g = Git.open(path)
-g.reset
-g.checkout('master')
-puts "Repository reset to latest version".green
-end	
+  def reset(path)
+    repo = Git.open(path)
+    repo.reset
+    repo.checkout('master')
+    STDOUT.puts "Repository reset to latest version".green
+  end
 end
