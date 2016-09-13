@@ -18,10 +18,15 @@ Or install it yourself as:
 
 ## Pre-requisities
 install Git:
+
 command: $ sudo apt-get install git
+
 install Ruby:
+
 links for downloading and installing ruby 
+
 https://www.ruby-lang.org/en/downloads/
+
 https://www.ruby-lang.org/en/installation/
 
 ## Usage
