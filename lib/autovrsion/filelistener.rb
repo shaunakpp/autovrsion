@@ -4,12 +4,12 @@ require 'listen'
 require 'colored'
 
 class FileListen
-	def lis(path,option)			
+	def lis(path,option)
 			begin
 			puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
 			repo=Rugged::Repository.new(path)
-			listener = Listen.to(path,only: [/^^[\/[a-zA-Z]*]*["Untitled Document"]/,/^[\/[a-zA-Z]*]*[".git"]/]) do |modified,added,removed|	
-	  			
+			listener = Listen.to(path,only: [/^^[\/[a-zA-Z]*]*["Untitled Document"]/,/^[\/[a-zA-Z]*]*[".git"]/]) do |modified,added,removed|
+
 	  			index = repo.index
 				user =  {
 				 			name: repo.config['user.name'],
@@ -17,7 +17,7 @@ class FileListen
 	             			time: Time.now
 	         			}
 
-					commit_options = {}	
+					commit_options = {}
 					commit_options[:author] = user
 					commit_options[:committer] = user
 					commit_options[:parents] = repo.empty? ? [] : [ repo.head.target ].compact
@@ -28,7 +28,7 @@ class FileListen
 					modified.each do |x|
 						x.gsub!(/[a-zA-Z]*[\/]/,"")
 						puts x
-						index.add("#{x}")	
+						index.add("#{x}")
 						end
 
 					commit_options[:tree] = index.write_tree(repo)
@@ -37,10 +37,10 @@ class FileListen
 					m.each do |x|
 						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
 						x.gsub!(/\]/,"")
-						puts x.gsub
-					end	
+						puts x
+					end
 					commit_options[:message] ||= "#{m} modified at "+"#{Time.now}"
-					
+
 					Rugged::Commit.create(repo,commit_options)
 					puts "File Modified".yellow
 				end
@@ -61,8 +61,8 @@ class FileListen
 						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
 						x.gsub!(/\]/,"")
 						puts x
-					end	
-					
+					end
+
 					index.write
 					commit_options[:message] ||= " #{a} added at "+"#{Time.now}"
 					if a[0] != "Untitled Document"
@@ -72,7 +72,7 @@ class FileListen
 				end
 
 				if removed.empty? == false
-					
+
 					index.reload
 					r = removed
 					index.add_all
@@ -80,7 +80,7 @@ class FileListen
 					r.each do |x|
 						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
 						x.gsub!(/\]/,"")
-					end	
+					end
 					index.write
 					commit_options[:message] ||= "#{r} removed at "+"#{Time.now}"
 					if r[0] != "Untitled Document"
@@ -94,16 +94,16 @@ class FileListen
 			stop  = STDIN.gets
 			if stop == "stop"
 				puts "Listener stopped"
-				listener.stop	
-			end	
+				listener.stop
+			end
 
 			if stop.to_i == 1
 					listener.stop
-					abort"Listener stopped"		
-			end	
+					abort"Listener stopped"
+			end
 	rescue Errno::ENOENT
 		puts "Error !Path does not exist".red
-	end	
+	end
 	end
 
 end

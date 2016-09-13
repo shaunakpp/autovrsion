@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "ruby-git"
   spec.add_runtime_dependency "rugged"
   spec.add_runtime_dependency "git"
-  spec.add_runtime_dependency "listen"
+  spec.add_runtime_dependency "listen", "~> 3.0"
   spec.add_runtime_dependency "daemons"
   spec.add_runtime_dependency "colored"
 
