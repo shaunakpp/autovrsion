@@ -1,6 +1,15 @@
 # Autovrsion
 
-A command line tool for simple auto versioning of files using Rugged and Listen.
+A command line tool for simple automatic versioning of files using Rugged and Listen.
+
+## Pre-requisities
+    Install Git
+    command: $ sudo apt-get install git
+    
+    Install Ruby
+    links for downloading and installing ruby :
+    https://www.ruby-lang.org/en/downloads/
+    https://www.ruby-lang.org/en/installation/
 
 ## Installation
 
@@ -15,19 +24,6 @@ And then execute:
 Or install it yourself as:
 
     $ gem install autovrsion
-
-## Pre-requisities
-install Git:
-
-command: $ sudo apt-get install git
-
-install Ruby:
-
-links for downloading and installing ruby 
-
-https://www.ruby-lang.org/en/downloads/
-
-https://www.ruby-lang.org/en/installation/
 
 ## Usage
 	$ autovrsion <option>
@@ -44,29 +40,39 @@ https://www.ruby-lang.org/en/installation/
 		6.reset - used after the check command,it resets to the latest version in the repository.
 		7.rewind - permanently rewind to a previous version(WARNING! any changes after the rewound version are permanently lost)
 
-### Command Usage
+## Command Usage
 
-$ autovrsion create
-or
-$ autovrsion create /path/to/repository
+    $ autovrsion create
+    or
+    $ autovrsion create /path/to/repository
+    
+    $ autovrsion start 
+    or
+    $ autovrsion start /path/to/repository
+    
+    $ autovrsion display
+    or
+    $ autovrsion display /path/to/repository
+    
+    $ autovrsion check
+    or
+    $ autovrsion check /path/to/repository 
+    
+    $ autovrsion reset
+    or
+    $ autovrsion reset /path/to/repository
+    
+    $ autovrsion rewind
+    or
+    $ autovrsion rewind /path/to/repository
 
-$ autovrsion start 
-or
-$ autovrsion start /path/to/repository
-
-$ autovrsion display
-or
-$ autovrsion display /path/to/repository
-
-$ autovrsion check
-or
-$ autovrsion check /path/to/repository 
-
-$ autovrsion reset
-or
-$ autovrsion reset /path/to/repository
-
-$ autovrsion rewind
-or
-$ autovrsion rewind /path/to/repository
+## TODO/Feature list
+* Write Specs
+* Separate out CLI and Library
+* Refactor code
+* Remove rugged, use ruby-git instead OR handle git checkout via Rugged
+* Better log display
+* Write hooks for modifications in code
+* Add CI, fix code ranking in Code Climate and follow best practice
+* Re-write file_listener
 
