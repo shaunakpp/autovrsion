@@ -1,8 +1,13 @@
-class Reset
-  def reset(path)
-    repo = Git.open(path)
-    repo.reset
-    repo.checkout('master')
-    STDOUT.puts "Repository reset to latest version".green
+#!/usr/bin/env ruby
+module Autovrsion
+  class Reset
+    def reset(path)
+
+      g = Git.open(path)
+      g.reset
+      g.checkout('master')
+      puts "Repository reset to latest version".green
+
+    end
   end
 end
