@@ -1,6 +1,15 @@
 # Autovrsion
 
-A command line tool for simple auto versioning of files using Rugged and Listen.
+A command line tool for simple automatic versioning of files using Rugged and Listen.
+
+## Pre-requisities
+    Install Git
+    command: $ sudo apt-get install git
+    
+    Install Ruby
+    links for downloading and installing ruby :
+    https://www.ruby-lang.org/en/downloads/
+    https://www.ruby-lang.org/en/installation/
 
 ## Installation
 
@@ -17,16 +26,6 @@ Or install it yourself as:
 ~~~
 $ gem install autovrsion
 ~~~
-
-## Pre-requisities
-install Git:
-
-https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
-
-install Ruby:
-
-https://www.ruby-lang.org/en/downloads/
-https://www.ruby-lang.org/en/installation/
 
 ## Usage
 
@@ -50,38 +49,26 @@ Commands:
 
 ## Command Usage
 
-~~~
-$ autovrsion create
-$ autovrsion create </path/to/repository>
-~~~
-initialize your repository at current directory or specified directory
-
-~~~
-$ autovrsion start
-$ autovrsion start </path/to/repository>
-~~~
-This will start the listener which will auto-commit after every change detected in the directory
-
-~~~
-$ autovrsion display
-$ autovrsion display </path/to/repository>
-~~~
-Shows a list of all versions in the directory.
-
-~~~
-$ autovrsion check
-$ autovrsion check </path/to/repository>
-~~~
-Enter the version number to access a particular version(always use `reset` after this command).
-
-~~~
-$ autovrsion reset
-$ autovrsion reset </path/to/repository>
-~~~
-Reset to latest version.
-
-~~~
-$ autovrsion rewind
-$ autovrsion rewind </path/to/repository>
-~~~
-Permanently rewind to a particular version. All versions above the specified versions are removed permanently !
+    $ autovrsion create
+    or
+    $ autovrsion create /path/to/repository
+    
+    $ autovrsion start 
+    or
+    $ autovrsion start /path/to/repository
+    
+    $ autovrsion display
+    or
+    $ autovrsion display /path/to/repository
+    
+    $ autovrsion check
+    or
+    $ autovrsion check /path/to/repository 
+    
+    $ autovrsion reset
+    or
+    $ autovrsion reset /path/to/repository
+    
+    $ autovrsion rewind
+    or
+    $ autovrsion rewind /path/to/repository

@@ -22,6 +22,7 @@ module Autovrsion
       begin
         listener = get_listener
         listener.start
+			  STDOUT.puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
         stop  = STDIN.gets
         if stop == "stop"
           STDOUT.puts "Listener stopped"
