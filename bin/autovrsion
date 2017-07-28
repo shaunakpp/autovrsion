@@ -1,53 +1,21 @@
 #!/usr/bin/env ruby
 require 'autovrsion'
-path = ARGV[1] == nil ? Dir.pwd.to_s : ARGV[1].to_s
+path = ARGV[1].nil? ? Dir.pwd.to_s : ARGV[1].to_s
 
 case ARGV[0]
-when "options"
-  if File.exists?("lib/manfile.txt")
-    file = File.open("lib/manfile.txt")
-    STDOUT.puts file.readlines
-  else
-    STDOUT.puts "create:\n$ autovrsion create
-    $ autovrsion create </path/to/repository>
-    initialize your repository at current directory or specified directory
-    start:
-    $ autovrsion start
-    $ autovrsion start </path/to/repository>
-    This will start the listener which will auto-commit after every change detected in the directory
-    display:
-    $ autovrsion display
-    $ autovrsion display </path/to/repository>
-    Shows a list of all versions in the directory.
-    check:
-    $ autovrsion check
-    $ autovrsion check </path/to/repository>
-    Enter the version number to access a particular version(always use reset after this command).
-    reset:
-    $ autovrsion reset
-    $ autovrsion reset </path/to/repository>
-    Reset to latest version.
-    rewind:
-    $ autovrsion rewind
-    $ autovrsion rewind </path/to/repository>
-    Permanently rewind to a particular version. All versions above the specified versions are removed permanently !"
-  end
-
-when "display"
-  Autovrsion::DisplayLog.new.disp(path)
-
-when "start"
+when 'options'
+  file = File.open('lib/manfile.txt')
+  STDOUT.puts file.readlines
+when 'display'
+  Autovrsion::DisplayLog.new(path).display
+when 'start'
   Autovrsion::FileListen.new(path).listen
-
-when "check"
+when 'check'
   Autovrsion::Checkout.new.checkout(path)
-
-when "create"
+when 'create'
   Autovrsion::CreateRepo.new.create(path)
-
-when "reset"
+when 'reset'
   Autovrsion::Reset.new.reset(path)
-
-when "rewind"
+when 'rewind'
   Autovrsion::Rewind.new.rewind(path)
 end
