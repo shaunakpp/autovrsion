@@ -1,34 +1,51 @@
-#!/usr/bin/env ruby
 module Autovrsion
+  # Displays a listing of versions and their counts
   class DisplayLog
-    def disp(path)
-      begin
-        @repo=Rugged::Repository.new(path)
-        ref=@repo.head
+    attr_accessor :path, :repository, :walker
+    def initialize(path = Dir.pwd.to_s)
+      @path = path
+      @repository = Rugged::Repository.new(@path)
+      @walker = Rugged::Walker.new(@repository)
+      @walker.push(@repository.head.target)
+    end
 
-        version_count = 0
-        walker = Rugged::Walker.new(@repo)
-        walker.push(ref.target)
-        walker_counter = Rugged::Walker.new(@repo)
-        walker_counter.push(ref.target)
-        walker_counter.each {version_count += 1}
-
-        walker_counter.reset
-
-        walker.each { |c|
-          STDOUT.puts "-----------------------------"+"version_number:".yellow + " #{version_count}".cyan + "---------------------------"
-          file_count = 1
-          STDOUT.puts c.message
-          tree1 = c.tree
-          tree1.each_blob 	{ |x| STDOUT.puts "(#{file_count})  #{x[:name]}"
-          file_count+=1
-        }
-        version_count-=1 }
-        walker.reset
-
-      rescue Rugged::OSError
-        STDOUT.puts "Path does not exist".red
+    def display
+      version_count = count
+      walker.each_with_index do |commit, index|
+        STDOUT.puts display_heading((version_count - index))
+        STDOUT.puts display_commit(commit)
       end
+    rescue Rugged::OSError
+      STDOUT.puts 'Path does not exist'.red
+    end
+
+    private
+
+    def count
+      reset_walker
+      @count ||= walker.count
+      reset_walker
+      @count
+    end
+
+    def reset_walker
+      walker.reset
+      walker.push(repository.head.target)
+      walker
+    end
+
+    def display_commit(commit)
+      message = ["Message: #{commit.message}"]
+      file_count = 1
+      commit.tree.each_blob do |file|
+        message << "(#{file_count})  #{file[:name]}"
+        file_count += 1
+      end
+      message.join("\n")
+    end
+
+    def display_heading(version_number)
+      'version_number:'.yellow + version_number.to_s.cyan
     end
   end
 end
