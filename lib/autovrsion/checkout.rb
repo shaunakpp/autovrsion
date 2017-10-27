@@ -7,37 +7,36 @@ module Autovrsion
       @repository = Rugged::Repository.new(path)
       @walker = Rugged::Walker.new(@repository)
       @git = Git.open(@path)
+      @versions = []
     end
 
-    def checkout
-      STDOUT.puts 'Enter Version number'
-      version_number = STDIN.gets.to_i
-      versions = []
-      version_count = 0
+    def checkout(version_number)
       reference = @repository.head
-
-      walker.push(reference.target)
-      walker.each { version_count += 1 }
-      walker.reset
-
-      walker.push(reference.target)
-      walker.each do |w|
-        versions[version_count] = w.oid
-        version_count -= 1
-      end
-      walker.reset
-      git.checkout(versions[version_number])
-
-      commit = repository.lookup(versions[version_number])
-      STDOUT.puts 'Directory now at version no.' + version_number.to_s.yellow
-      STDOUT.puts commit.message
-      STDOUT.puts commit.type
-      tree = commit.tree
-      tree.each_blob { |x| STDOUT.puts x[:name].to_s.cyan }
+      travel_and_reset_walker(reference.target) { |w| @versions << w.oid }
+      @versions.reverse!
+      git.checkout(@versions[version_number])
+      display(repository.lookup(@versions[version_number]), version_number)
     rescue Rugged::OSError
       STDOUT.puts 'Path does not exist'.red
     rescue TypeError
       STDOUT.puts 'Enter Valid Version number'.red
     end
+
+    def travel_and_reset_walker(target)
+      walker.push(target)
+      walker.each do |w|
+        yield(w) if block_given?
+      end
+      walker.reset
+    end
+
+    def display(commit, version_number)
+      STDOUT.puts 'Directory now at version no.' + version_number.to_s.yellow
+      STDOUT.puts commit.message
+      STDOUT.puts commit.type
+      tree = commit.tree
+      tree.each_blob { |x| STDOUT.puts x[:name].to_s.cyan }
+    end
+
   end
 end

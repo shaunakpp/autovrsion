@@ -1,6 +1,6 @@
 module Autovrsion
   # Displays a listing of versions and their counts
-  class DisplayLog
+  class Display
     attr_accessor :path, :repository, :walker
     def initialize(path = Dir.pwd.to_s)
       @path = path
