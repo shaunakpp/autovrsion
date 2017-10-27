@@ -7,15 +7,19 @@ when 'options'
   file = File.open('lib/manfile.txt')
   STDOUT.puts file.readlines
 when 'display'
-  Autovrsion::DisplayLog.new(path).display
+  Autovrsion::Display.new(path).display
 when 'start'
-  Autovrsion::FileListen.new(path).listen
+  Autovrsion::Listener.new(path).listen
 when 'check'
-  Autovrsion::Checkout.new.checkout(path)
+  STDOUT.puts 'Enter Version number'
+  version_number = STDIN.gets.to_i
+  Autovrsion::Checkout.new(path).checkout(version_number)
 when 'create'
-  Autovrsion::CreateRepo.new.create(path)
+  Autovrsion::Create.create(path)
+  STDOUT.puts "Repository created at directory #{path}".cyan
 when 'reset'
-  Autovrsion::Reset.new.reset(path)
+  Autovrsion::Reset.reset(path)
+  STDOUT.puts 'Repository reset to latest version'.green
 when 'rewind'
   Autovrsion::Rewind.new.rewind(path)
 end

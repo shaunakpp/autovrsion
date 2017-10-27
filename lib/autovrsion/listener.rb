@@ -1,7 +1,7 @@
 module Autovrsion
   # Listens to changes in the repository
   # automatically commits after every modification
-  class FileListen
+  class Listener
     UNTITLED_DOCUMENT_REGEX = %r{^^[/[a-zA-Z]*]*["Untitled Document"]}
     GIT_FILE_REGEX = %r{^[/[a-zA-Z]*]*[".git"]}
 
