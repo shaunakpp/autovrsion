@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/shaunakpp/autovrsion/badges/gpa.svg)](https://codeclimate.com/github/shaunakpp/autovrsion)
+
 # Autovrsion
 
 A command line tool for simple automatic versioning of files using Rugged and Listen.
