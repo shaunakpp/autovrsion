@@ -1,109 +1,96 @@
-#!/usr/bin/env ruby
-require 'rugged'
-require 'listen'
-require 'colored'
+module Autovrsion
+  # Listens to changes in the repository
+  # automatically commits after every modification
+  class FileListen
+    UNTITLED_DOCUMENT_REGEX = %r{^^[/[a-zA-Z]*]*["Untitled Document"]}
+    GIT_FILE_REGEX = %r{^[/[a-zA-Z]*]*[".git"]}
 
-class FileListen
-	def lis(path,option)
-			begin
-			puts "Listening to changes.enter "+"stop ".red+"or"+" 1 ".red+"to stop listening to changes"
-			repo=Rugged::Repository.new(path)
-			listener = Listen.to(path,only: [/^^[\/[a-zA-Z]*]*["Untitled Document"]/,/^[\/[a-zA-Z]*]*[".git"]/]) do |modified,added,removed|
+    def initialize(path)
+      @path = path
+      @repository = Rugged::Repository.new(@path)
+      @index = @repository.index
+    end
 
-	  			index = repo.index
-				user =  {
-				 			name: repo.config['user.name'],
-	             			email: repo.config['user.email'],
-	             			time: Time.now
-	         			}
+    def user
+      {
+        name: @repository.config['user.name'],
+        email: @repository.config['user.email'],
+        time: Time.now
+      }
+    end
 
-					commit_options = {}
-					commit_options[:author] = user
-					commit_options[:committer] = user
-					commit_options[:parents] = repo.empty? ? [] : [ repo.head.target ].compact
-					commit_options[:update_ref] = 'HEAD'
+    def commit_options
+      {
+        author: user.clone,
+        committer: user.clone,
+        parents: (@repository.empty? ? [] : [@repository.head.target].compact),
+        update_ref: 'HEAD'
+      }
+    end
 
-				if modified.empty? == false
-					index.reload
-					modified.each do |x|
-						x.gsub!(/[a-zA-Z]*[\/]/,"")
-						puts x
-						index.add("#{x}")
-						end
+    def listen
+      listener_object = listener
+      listener_object.start
+      stop = STDIN.gets
+      if stop == 'stop' || stop.to_i == 1
+        listener_object.stop
+        abort 'Listener stopped'
+      end
+    rescue Errno::ENOENT
+      STDOUT.puts 'Path does not exist'.red
+    end
 
-					commit_options[:tree] = index.write_tree(repo)
-					m = modified
-					index.write
-					m.each do |x|
-						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
-						x.gsub!(/\]/,"")
-						puts x
-					end
-					commit_options[:message] ||= "#{m} modified at "+"#{Time.now}"
+    def listener
+      Listen.to(path, only: [UNTITLED_DOCUMENT_REGEX, GIT_FILE_REGEX]) do |modified, added, removed|
+        file_modified(modified) unless modified.empty?
+        file_created(added) unless added.empty?
+        file_removed(removed) unless removed.empty?
+      end
+    end
 
-					Rugged::Commit.create(repo,commit_options)
-					puts "File Modified".yellow
-				end
+    def file_modified(modified_files)
+      @index.reload
+      modified_files.each do |x|
+        @index.add(x.delete!(%r{[a-zA-Z]*[/]}))
+      end
+      options = commit_options.clone
+      options[:tree] = @index.write_tree(@repository)
+      @index.write
+      modified_files.each do |x|
+        file_name = x.delete(%r{(\[)(/[a-zA-Z]*)*(/)}).delete(']')
+        STDOUT.puts file_name
+      end
+      options[:message] = "#{modified_files} modified at #{Time.now}"
+      Rugged::Commit.create(@repository, options)
+      STDOUT.puts 'File Modified'.yellow
+    end
 
-				if added.empty? == false
-					index.reload
-					added.each do |x|
-						x.gsub!(/[a-zA-Z]*[\/]/,"")
-						index.add("#{x}")
-						if x == "Untitled Document"
-							index.remove("Untitled Document")
-						end
-					end
+    def file_created(added)
+      @index.reload
+      added.each do |x|
+        file_name = x.delete(%r{[a-zA-Z]*[/]})
+        next if file_name =~ /Untitled Document/i
+        @index.add(x.to_s)
+        STDOUT.puts file_name
+      end
+      options = commit_options.clone
+      options[:tree] = @index.write_tree @repository
+      @index.write
+      options[:message] = " #{added} added at #{Time.now}"
+      Rugged::Commit.create(@repository, options)
+      STDOUT.puts 'File Added'.green
+    end
 
-					a = added
-					commit_options[:tree] = index.write_tree repo
-					a.each do |x|
-						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
-						x.gsub!(/\]/,"")
-						puts x
-					end
-
-					index.write
-					commit_options[:message] ||= " #{a} added at "+"#{Time.now}"
-					if a[0] != "Untitled Document"
-					Rugged::Commit.create(repo,commit_options)
-					puts "File Added".green
-					end
-				end
-
-				if removed.empty? == false
-
-					index.reload
-					r = removed
-					index.add_all
-					commit_options[:tree] = index.write_tree(repo)
-					r.each do |x|
-						x.gsub!(/(\[)(\/[a-zA-Z]*)*(\/)/,"")
-						x.gsub!(/\]/,"")
-					end
-					index.write
-					commit_options[:message] ||= "#{r} removed at "+"#{Time.now}"
-					if r[0] != "Untitled Document"
-						Rugged::Commit.create(repo,commit_options)
-						puts "File Removed".red
-					end
-				end
-			end
-
-			listener.start
-			stop  = STDIN.gets
-			if stop == "stop"
-				puts "Listener stopped"
-				listener.stop
-			end
-
-			if stop.to_i == 1
-					listener.stop
-					abort"Listener stopped"
-			end
-	rescue Errno::ENOENT
-		puts "Error !Path does not exist".red
-	end
-	end
-
+    def file_deleted(removed_files)
+      @index.reload
+      @index.add_all
+      options = commit_options.clone
+      options[:tree] = @index.write_tree(@repository)
+      @index.write
+      options[:message] = "#{removed_files} removed at #{Time.now}"
+      Rugged::Commit.create(@repository, options)
+      options.delete(:tree)
+      STDOUT.puts 'File Removed'.red
+    end
+  end
 end

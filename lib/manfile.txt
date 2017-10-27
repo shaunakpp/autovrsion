@@ -1,0 +1,24 @@
+create:
+$ autovrsion create
+$ autovrsion create </path/to/repository>
+initialize your repository at current directory or specified directory
+start:
+$ autovrsion start
+$ autovrsion start </path/to/repository>
+This will start the listener which will auto-commit after every change detected in the directory
+display:
+$ autovrsion display
+$ autovrsion display </path/to/repository>
+Shows a list of all versions in the directory.
+check:
+$ autovrsion check
+$ autovrsion check </path/to/repository>
+Enter the version number to access a particular version(always use reset after this command).
+reset:
+$ autovrsion reset
+$ autovrsion reset </path/to/repository>
+Reset to latest version.
+rewind:
+$ autovrsion rewind
+$ autovrsion rewind </path/to/repository>
+Permanently rewind to a particular version. All versions above the specified versions are removed permanently !
