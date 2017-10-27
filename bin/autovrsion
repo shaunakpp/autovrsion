@@ -16,10 +16,10 @@ when 'check'
   Autovrsion::Checkout.new(path).checkout(version_number)
 when 'create'
   Autovrsion::Create.create(path)
-  puts "Repository created at directory #{path}".cyan
+  STDOUT.puts "Repository created at directory #{path}".cyan
 when 'reset'
   Autovrsion::Reset.reset(path)
-  puts "Repository reset to latest version".green
+  STDOUT.puts 'Repository reset to latest version'.green
 when 'rewind'
   Autovrsion::Rewind.new.rewind(path)
 end
