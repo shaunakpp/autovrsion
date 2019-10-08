@@ -42,13 +42,14 @@ module Autovrsion
 
     def listener
       Listen.to(path, only: [UNTITLED_DOCUMENT_REGEX, GIT_FILE_REGEX]) do |modified, added, removed|
-        file_modified(modified) unless modified.empty?
-        file_created(added) unless added.empty?
-        file_removed(removed) unless removed.empty?
+        file_modified(modified)
+        file_created(added)
+        file_removed(removed)
       end
     end
 
     def file_modified(modified_files)
+      return if modified_files.empty?
       @index.reload
       modified_files.each do |x|
         @index.add(x.delete!(%r{[a-zA-Z]*[/]}))
@@ -66,6 +67,7 @@ module Autovrsion
     end
 
     def file_created(added)
+      return if added.empty?
       @index.reload
       added.each do |x|
         file_name = x.delete(%r{[a-zA-Z]*[/]})
@@ -82,6 +84,7 @@ module Autovrsion
     end
 
     def file_deleted(removed_files)
+      return if removed_files.empty?
       @index.reload
       @index.add_all
       options = commit_options.clone
