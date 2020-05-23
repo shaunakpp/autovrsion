@@ -1,4 +1,4 @@
-Copyright (c) 2014 Shaunak Pagnis
+Copyright (c) 2020 Shaunak Pagnis
 
 MIT License
 
